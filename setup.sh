@@ -46,11 +46,6 @@ read -p "Access token: " access_token
 
 # Setup SSL certificate
 openssl s_client -showcerts -connect ${hostname}:443 </dev/null 2>/dev/null | openssl x509 -outform PEM > ${hostname}.crt
-echo "Move certificate"
-#sudo mv ${hostname}.crt /etc/ca-certificates/trust-source/anchors/
-
-echo "Reload certificate"
-#sudo update-ca-trust extract
 
 # Create the runner
 runner_info=$(curl --request POST \
@@ -60,8 +55,6 @@ runner_info=$(curl --request POST \
   --url "https://${hostname}/api/v4/user/runners")
 
 # {"id":1,"token":"xx","token_expires_at":null}
-
-echo $runner_info
 
 obtained_at=$(date +%Y-%m-%dT%H:%M:%SZ)
 id=$(echo $runner_info | jq -r ".id")
