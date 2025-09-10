@@ -1,0 +1,32 @@
+concurrent = 1
+check_interval = 0
+shutdown_timeout = 0
+
+[session_server]
+  session_timeout = 1800
+
+[[runners]]
+  name = "gitlab-runner-0"
+  url = "https://gitlab.vgucht.be"
+  id = 1
+  token = "glrt-UYVWbexW2gHYTwYEdUNzvW86MQp0OjEKdTp6Cw.01.121dqzmzf"
+  token_obtained_at = 2025-09-09T19:15:48Z
+  token_expires_at = 0001-01-01T00:00:00Z
+  executor = "docker"
+  [runners.cache]
+    MaxUploadedArchiveSize = 0
+    [runners.cache.s3]
+    [runners.cache.gcs]
+    [runners.cache.azure]
+  [runners.docker]
+    tls_verify = false
+    image = "debian:stable-slim"
+    pull_policy = "if-not-present" 
+    privileged = false
+    disable_entrypoint_overwrite = false
+    oom_kill_disable = false
+    disable_cache = false
+    volumes = ["/cache"]
+    shm_size = 0
+    network_mtu = 0
+    network_mode = "gitlab-backend-net"

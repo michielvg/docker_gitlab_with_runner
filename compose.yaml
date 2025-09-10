@@ -1,0 +1,79 @@
+name: ${HOSTNAME} 
+services:
+  gitlab:
+    image: gitlab/gitlab-ce:latest
+    container_name: gitlab
+    restart: always
+    hostname: ${HOSTNAME}
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        # Add any other gitlab.rb configuration here, each on its own line
+        external_url 'https://${HOSTNAME}'
+    ports:
+      - '80:80'
+      - '443:443'
+      - '2424:22'
+    volumes:
+      - type: volume
+        source: gitlab-home
+        target: /etc/gitlab
+        volume:
+          subpath: config
+      - type: volume
+        source: gitlab-home
+        target: /var/log/gitlab
+        volume:
+          subpath: log
+      - type: volume
+        source: gitlab-home
+        target: /var/opt/gitlab
+        volume:
+          subpath: data
+    shm_size: '256m'
+    networks: 
+      - default
+      - backend
+
+  gitlab-runner:
+    image: gitlab/gitlab-runner:latest
+    entrypoint: ["/usr/bin/dumb-init", "--"]
+    command: 
+      - /bin/sh
+      - -c
+      - |
+        cert="/usr/local/share/ca-certificates/${HOSTNAME}.crt"
+        [ ! -e $$cert ] && \
+        (
+          echo "DOWNLOADING SSL CERT FOR ${HOSTNAME}";
+          openssl s_client -showcerts -connect ${HOSTNAME}:443 </dev/null 2>/dev/null | openssl x509 -outform PEM > $$cert;
+          echo "UPDATING CERTS";
+          update-ca-certificates;
+        )
+        echo "STARTING RUNNER"
+        /entrypoint run --user=gitlab-runner --working-directory=/home/gitlab-runner
+    container_name: gitlab-runner-0
+    restart: always
+    volumes:
+      - type: volume
+        source: gitlab-runner-config
+        target: /etc/gitlab-runner
+        volume:
+          subpath: runner-0
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - backend
+    depends_on:
+      gitlab:
+        condition: service_healthy
+
+networks:
+  backend:
+    driver: bridge
+
+volumes:
+  gitlab-home:
+    external: true
+    name: "gitlab-home_1"
+  gitlab-runner-config:
+    external: true
+    name: "gitlab-runner-config_1"
