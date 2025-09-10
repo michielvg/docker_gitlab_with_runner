@@ -1,34 +1,13 @@
-# Gitlab with ci/cd runner
-(and automated ssl cert setup)
+# Gitlab in docker
+* With semi automatic gitlab-runner creation and configuration
 
 # Quickstart
-* Dependencies
-    * Docker
-    * jq
-* Create external volumes
-```bash
-$ docker volume create gitlab-home
-gitlab-home
-$ # Create recursive folders
-$ docker run -it --rm -v gitlab-home:/data debian:stable-slim mkdir /data/config /data/log /data/data
+* Make sure docker is installed
+* Clone this repository
+* Go into the cloned repo folder
+* Run setup.sh
 
-$ docker volume create gitlab-runner-config
-gitlab-runner-config
-$ # Create recursive folders
-$ docker run -it --rm -v gitlab-runner-config:/data debian:stable-slim mkdir /data/runner-0
-```
-* Configure your hostname
 ```bash
-$ echo "HOSTNAME=gitlab.example.com" > .env 
+$ ./setup.sh
 ```
-* Start the containers
-```bash
-$ docker compose up -d
-```
-
-* Add container ip to hosts file for easy access
-```bash
-$ . .env
-$ ip=$(docker network inspect ${HOSTNAME//./}_default | jq -r ".[0].Containers | to_entries[] | first(.value).IPv4Address" | cut -f1 -d"/")
-$ echo $ip $HOSTNAME | sudo tee -a /etc/hosts
-```
+* Follow the prompts
