@@ -73,7 +73,7 @@ networks:
 volumes:
   gitlab-home:
     external: true
-    name: "gitlab-home_1"
+    name: "gitlab-home"
   gitlab-runner-config:
     external: true
-    name: "gitlab-runner-config_1"
+    name: "gitlab-runner-config"

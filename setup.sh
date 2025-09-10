@@ -1,7 +1,7 @@
 #!/bin/bash
 
-gitlab_home_volume="gitlab-home_1"
-gitlab_runner_config_volume="gitlab-runner-config_1"
+gitlab_home_volume="gitlab-home"
+gitlab_runner_config_volume="gitlab-runner-config"
 
 # Create external volumes with folders
 # So to be sure our data does not dissapear when we delete/update the container/image
@@ -101,9 +101,7 @@ shutdown_timeout = 0
     volumes = [\"/cache\"]
     shm_size = 0
     network_mtu = 0
-    network_mode = \"${network_mode}-net\"
+    network_mode = \"${network_mode}\"
 EOF
 
 docker container exec gitlab-runner-0 /bin/bash -c "echo \"${config_toml}\" > /etc/gitlab-runner/config.toml"
-
-echo "$config_toml"
